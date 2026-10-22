@@ -3,10 +3,11 @@ import ipaddress
 import json
 from urllib.parse import urlsplit, unquote
 
-PROTOCOL = 'search-preview-value-v1'
+PROTOCOL = 'search-preview-value-v2'
 SCHEMA = {'type':'object','properties':{
-    'score':{'type':'integer','minimum':0,'maximum':100}},
-    'required':['score'],'additionalProperties':False}
+    'score':{'type':'integer','minimum':0,'maximum':100},
+    'summary':{'type':'string'}},
+    'required':['score','summary'],'additionalProperties':False}
 
 
 def prepare_preview(url, headline, snippet=''):
@@ -36,6 +37,9 @@ def preview_messages(preview):
         'Score 0-100: 0-39 vague hype/little apparent value, 40-64 uncertain, 65-100 concrete useful information or practical depth. '
         'Do not use domain fame as proof of quality. With little information prefer uncertainty over extreme scores. '
         'For calibration: a concrete step-by-step guide with useful tips is around 75; an unexplained shocking-secret headline is around 15; an unclear preview is around 50. '
+        'Also write summary: one short sentence (at most 30 words) describing the apparent topic from the supplied text. '
+        'When only a title is available, describe what it appears to cover rather than inventing an answer. '
+        'Do not mention scores, preview labels, missing snippets, or technical status in the summary. '
         'Never invent article facts or a spoiler. Return the required JSON.'},
         {'role':'user','content':json.dumps(preview,ensure_ascii=False)}]
 
@@ -50,3 +54,13 @@ def preview_rating(output):
                   'red':'The local model estimates lower reading value from this preview.'}[band], 'method':PROTOCOL,
         'disclaimer':'Preview only · local model guess · not fine-tuned',
         'scope':'Based only on URL, title and any visible search snippet. Article not read; not a truth or credibility rating.'}
+
+
+def preview_summary(output):
+    summary=output.get('summary')
+    if not isinstance(summary,str) or not summary.strip() or len(summary)>500:
+        raise ValueError('The local model did not return a concise summary; try again')
+    # Keep a single sentence even if the small model adds further commentary.
+    import re
+    sentence=re.split(r'(?<=[.!?])\s+', ' '.join(summary.split()), maxsplit=1)[0]
+    return sentence if sentence.endswith(('.', '!', '?')) else sentence+'.'

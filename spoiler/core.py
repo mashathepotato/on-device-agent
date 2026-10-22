@@ -7,7 +7,7 @@ import threading
 import time
 import urllib.request
 from .scoring import VERSION as SCORE_VERSION, click_value
-from .preview import PROTOCOL as PREVIEW_PROTOCOL, SCHEMA as PREVIEW_SCHEMA, prepare_preview, preview_messages, preview_rating
+from .preview import PROTOCOL as PREVIEW_PROTOCOL, SCHEMA as PREVIEW_SCHEMA, prepare_preview, preview_messages, preview_rating, preview_summary
 
 PROTOCOL = 'source-sentence-selector-v1'
 MODEL = 'hf.co/LiquidAI/LFM2.5-1.2B-Instruct-GGUF:Q4_K_M'
@@ -55,7 +55,7 @@ class Engine:
             raise ValueError('Comparison requires a distinct tuned checkpoint')
         preview=prepare_preview(url,headline,snippet)
         prompt=preview_messages(preview)
-        options=dict(OPTIONS,num_predict=48)
+        options=dict(OPTIONS,num_predict=112)
         key=hashlib.sha256(json.dumps([PREVIEW_PROTOCOL,self.models[mode],prompt,options]).encode()).hexdigest()
         started=time.perf_counter()
         with LOCK:
@@ -67,10 +67,12 @@ class Engine:
             with urllib.request.urlopen(request,timeout=180) as response:
                 raw=json.load(response)
             inference_ms=round((time.perf_counter()-inference_started)*1000,2)
-            rating=preview_rating(json.loads(raw['message']['content']))
+            output=json.loads(raw['message']['content'])
+            rating=preview_rating(output)
+            summary=preview_summary(output)
             fields='URL + title'+(' + search snippet' if preview['snippet'] else ' (no snippet available)')
             result={'mode':mode,'model':self.models[mode],'click_value':rating,'preview_only':True,
-                'spoiler':'','evidence':'','evidence_verified':False,'source_url':url,
+                'summary':summary,'spoiler':'','evidence':'','evidence_verified':False,'source_url':url,
                 'status':'Article not read. Estimated from '+fields+'.',
                 'preview_fields':fields,'protocol':PREVIEW_PROTOCOL,'truncated':False,
                 'inference_ms':inference_ms,'request_ms':round((time.perf_counter()-started)*1000,2),

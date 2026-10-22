@@ -23,9 +23,8 @@ document.getElementById('read').onclick=async()=>{
     const response=await chrome.runtime.sendMessage(page);
     if(!response?.ok) throw Error(response?.error || 'Could not read this article.');
     const data=response.data;const value=data.click_value;status.replaceChildren();
-    if(value){const badge=document.createElement('strong');badge.textContent=`${value.score}/100 · ${value.label}`;badge.style.color=({green:'#14532d',amber:'#713f12',red:'#991b1b'})[value.band]||'#17392e';status.append(badge);const explanation=document.createElement('p');explanation.textContent=value.reason+' '+value.disclaimer;status.append(explanation);}
-    const answer=document.createElement('p');answer.textContent=data.spoiler||data.status;status.append(answer);
-    const note=document.createElement('small');note.textContent=`Visible page text · ${data.request_ms} ms${data.cache_hit?' (cached answer)':''}. ${data.truncated?'Partial article: first 16,000 characters. ':''}${data.status}`;status.append(note);
+    if(value){const badge=document.createElement('strong');badge.textContent=`${value.score}/100 · ${value.label}`;badge.style.color=({green:'#14532d',amber:'#713f12',red:'#991b1b'})[value.band]||'#17392e';status.append(badge);}
+    const answer=document.createElement('p');answer.textContent=data.summary||data.spoiler||'No concise answer available.';status.append(answer);
   } catch(error){status.textContent=error.message;}
   finally{button.disabled=false;}
 };
