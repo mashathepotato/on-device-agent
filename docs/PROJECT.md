@@ -5,10 +5,10 @@ Keep this brief current as the team agrees on the hackathon scope. Undecided ite
 ## What we are building
 
 - **Name:** On-device Agent
-- **Problem and users:** Not decided
-- **Success looks like:** Not decided
+- **Problem and users:** Spoiler MVP experiment: reveal the answer clickbait headlines withhold, using the actual article. See `context/spoiler-idea.md`.
+- **Success looks like:** Fast local spoiler extraction, with a fair original-versus-fine-tuned comparison and grounded evidence. Improvement must be measured, not assumed.
 - **Out of scope:** Not decided
-- **Deadline or demo:** Not decided
+- **Deadline or demo:** Two-hour hackathon; working offline demo on a consumer device.
 
 ## People and coordination
 
@@ -21,7 +21,7 @@ Keep this brief current as the team agrees on the hackathon scope. Undecided ite
 
 ## Technical context
 
-- **Stack and architecture:** Not chosen; this starter does not include an application.
+- **Stack and architecture:** MVP implementation in progress by Sol on `agent/sol/spoiler-mvp`. Required model family LFM2.5-1.2B; required training framework Halo. See `context/spoiler-idea.md` for scope and evaluation constraints.
 - **Source layout and module boundaries:** Define when choosing the stack.
 - **Shared interfaces:** Record contracts and their owners here before parallel implementation.
 - **External services / data:** None configured. Add only approved services and data sources.
