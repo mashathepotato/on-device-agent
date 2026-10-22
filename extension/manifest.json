@@ -1,0 +1,1 @@
+{"manifest_version":3,"name":"Get to the Point — local spoiler","version":"0.1.0","description":"Reveal an article's withheld answer using a model on your device.","permissions":["activeTab","scripting","storage"],"host_permissions":["http://127.0.0.1:8765/*"],"action":{"default_popup":"popup.html"}}

@@ -45,3 +45,9 @@ Thumbs.db
 *~
 
 # Commit your package manager lockfiles and shared agent instructions.
+
+# Downloaded corpus, checkpoints, and raw evaluation runs
+data/
+models/
+checkpoints/
+results/

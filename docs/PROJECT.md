@@ -22,7 +22,7 @@ Keep this brief current as the team agrees on the hackathon scope. Undecided ite
 ## Technical context
 
 - **Stack and architecture:** MVP implementation in progress by Sol on `agent/sol/spoiler-mvp`. Required model family LFM2.5-1.2B; required training framework Halo. See `context/spoiler-idea.md` for scope and evaluation constraints.
-- **Source layout and module boundaries:** Define when choosing the stack.
+- **Source layout and module boundaries:** `spoiler/` Python API/inference, `web/` local demo, `extension/` MV3 popup, `tools/` data/evaluation, `training/` proposed Halo recipe. Sol owns these on the MVP branch.
 - **Shared interfaces:** Record contracts and their owners here before parallel implementation.
 - **External services / data:** None configured. Add only approved services and data sources.
 - **Environment:** Copy `.env.example` to `.env` only if needed. Never commit real secrets.
@@ -35,9 +35,9 @@ These check the starter tooling, not your future application:
 python3 -m unittest discover -s tests -v
 ```
 
-- **App install:** Not configured
-- **App dev server:** Not configured
-- **App test / lint / build:** Not configured — add local commands when adding the app. CI is intentionally disabled to avoid automated notification emails.
+- **App install:** Python standard library; install Ollama and pull official LFM weights (see `docs/SPOILER.md`).
+- **App dev server:** `python3 -m spoiler.server` → http://127.0.0.1:8765
+- **App test / lint / build:** `python3 -m unittest discover -s tests -v`; `node --check web/app.js`; `node --check extension/popup.js`. CI remains disabled.
 - **Deploy:** Not configured; requires explicit authorization.
 
 ## Current priorities
