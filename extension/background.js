@@ -1,6 +1,5 @@
 const API = 'http://127.0.0.1:8765';
 let pairingToken = '';
-let defaultMode = 'original';
 async function localRequest(path, body, token) {
   let response;
   try {
@@ -19,12 +18,11 @@ async function localRequest(path, body, token) {
 async function pair() {
   const data = await localRequest('/api/pair', {});
   pairingToken = data.token;
-  defaultMode = data.default_mode || 'original';
   return data;
 }
 async function spoil(message) {
   if (!pairingToken) await pair();
-  const {mode = defaultMode} = await chrome.storage.local.get('mode');
+  const {mode = 'original'} = await chrome.storage.local.get('mode');
   const visible = message.type === 'spoil-visible';
   const path = visible ? '/api/spoil' : '/api/spoil-link';
   const body = visible ? {headline:message.headline,article:message.article,mode} : {url:message.url,headline:message.headline,snippet:message.snippet||'',mode};

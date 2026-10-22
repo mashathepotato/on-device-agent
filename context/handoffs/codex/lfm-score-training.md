@@ -2,7 +2,7 @@
 
 - Owner: Codex. Reviewer/human lead: Masha.
 - Branch: `agent/codex/lfm-score-training`.
-- Status: actual Halo fine-tuning COMPLETE and local Ollama inference DEPLOYED; matched quality comparison and ONNX remain pending.
+- Status: actual Halo fine-tuning COMPLETE; user requested immediate save before comparison/ONNX.
 - Data: 512 public Webis training examples + 100 validation examples, human spoiler selectors and Claude Haiku 5.5 synthetic utility scores. No overlength exclusions; exact train/heldout article duplicates excluded. Official test not labelled or evaluated.
 - GPU/environment: organizer NVIDIA H200, Halo 1.1.0, PyTorch 2.11.0+cu130, Transformers 5.16.1. The supplied container needed CUDA include/tool paths set explicitly; use `training/click_model/h200_env.sh`.
 - Training: full 1,170,340,608-parameter BF16 SFT, assistant-only loss, batch 2, accumulation 4, LR 2e-5, 2 epochs, 128 optimizer steps, seed 42. Two-step backward smoke passed. Full training runtime 104.8 seconds, training loss 0.3539.
@@ -27,7 +27,3 @@ python -m training.click_model.benchmark_hf --tuned /data/checkpoints/lfm-click-
 Browser integration notes: `docs/notes/codex/lfm-onnx-extension-handoff.md`. No organizer contacts or teammate messages sent. SSH agent forwarding disabled. No restart. No CI added or main merge.
 
 User subsequently requested an estimated table. Saved `docs/notes/codex/lfm-estimated-comparison.md` with measured baseline and explicitly illustrative projected ranges. These are planning assumptions, not trained-model benchmark results; no measured comparisons were changed.
-
-## Local inference deployment follow-up
-
-User authorized deployment and commits before/after for rollback. Before checkpoint `3d506a7`; publisher workflow preserved by merge `ead8da8`. Model `lfm-click-tuned:checkpoint128` imported natively by Ollama as Q4_K_M; running service defaults to it. Installed Chrome extension preference selected Fine-tuned through its UI. Production prompt exactly matches all 512 training records; original model remains available with identical v2 protocol. Preview-only fallback deliberately uses original model after specialist preview smoke gave unhelpful output. 32 tests pass; real three-article API inference verified. Setup, actual artifact digest, rollback commands and limits: `docs/notes/codex/lfm-local-deployment.md`; aggregate smoke metadata in `lfm-local-deployment.json`. ONNX and measured improvement still pending.

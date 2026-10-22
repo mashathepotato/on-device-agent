@@ -50,7 +50,7 @@ class Handler(BaseHTTPRequestHandler):
             rows = [json.loads(line) for line in path.read_text().splitlines()[:30]]
             return self.reply(200, {'examples': [{'id': r['id'], 'headline': r['headline'], 'article': r['article']} for r in rows]})
         if self.path == '/api/status':
-            return self.reply(200, {'models': ENGINE.models, 'default_mode': ENGINE.default_mode})
+            return self.reply(200, {'models': ENGINE.models})
         files = {'/': 'web/index.html', '/app.js': 'web/app.js', '/style.css': 'web/style.css'}
         if self.path not in files:
             return self.reply(404, {'error': 'Not found'})
@@ -67,7 +67,7 @@ class Handler(BaseHTTPRequestHandler):
         if self.path == '/api/pair':
             if not self.allowed() or self.headers.get('Origin') != EXTENSION:
                 return self.reply(403, {'error': 'Only the installed Get to the Point extension can pair'})
-            return self.reply(200, {'token': TOKEN, 'models': ENGINE.models, 'default_mode': ENGINE.default_mode})
+            return self.reply(200, {'token': TOKEN, 'models': ENGINE.models})
         if not self.allowed() or self.headers.get('X-Spoiler-Token') != TOKEN:
             return self.reply(403, {'error': 'Origin/token denied'})
         if self.path not in ('/api/spoil', '/api/spoil-link', '/api/preview'):
@@ -80,7 +80,7 @@ class Handler(BaseHTTPRequestHandler):
             if not isinstance(body, dict):
                 raise ValueError('Request must be a JSON object')
             if self.path == '/api/preview':
-                result = ENGINE.preview(body.get('url'), body.get('headline'), body.get('snippet',''), body.get('mode',ENGINE.default_mode))
+                result = ENGINE.preview(body.get('url'), body.get('headline'), body.get('snippet',''), body.get('mode','original'))
                 result.update(total_ms=result['request_ms'],fetch_ms=0,fetch_cache_hit=False)
             elif self.path == '/api/spoil-link':
                 started = time.perf_counter()
@@ -89,16 +89,16 @@ class Handler(BaseHTTPRequestHandler):
                 except ArticleError as error:
                     if not body.get('headline'): raise
                     failed_fetch_ms=round((time.perf_counter()-started)*1000,2)
-                    result=ENGINE.preview(body.get('url'),body['headline'],body.get('snippet',''),body.get('mode',ENGINE.default_mode))
+                    result=ENGINE.preview(body.get('url'),body['headline'],body.get('snippet',''),body.get('mode','original'))
                     result.update(fetch_ms=failed_fetch_ms,fetch_cache_hit=False,
                                   fallback_reason=str(error),publisher_status=error.publisher_status)
                 else:
                     headline = body.get('headline') or source['article_title']
-                    result = ENGINE.generate(headline, source['article'], body.get('mode', ENGINE.default_mode))
+                    result = ENGINE.generate(headline, source['article'], body.get('mode', 'original'))
                     result.update({key: value for key, value in source.items() if key != 'article'})
                 result['total_ms'] = round((time.perf_counter()-started)*1000, 2)
             else:
-                result = ENGINE.generate(body.get('headline'), body.get('article'), body.get('mode', ENGINE.default_mode))
+                result = ENGINE.generate(body.get('headline'), body.get('article'), body.get('mode', 'original'))
             self.reply(200, result)
         except ArticleError as error:
             self.reply(422, {'error': str(error), 'code': error.code,
