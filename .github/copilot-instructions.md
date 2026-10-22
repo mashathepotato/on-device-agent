@@ -1,0 +1,1 @@
+Read and follow the repository's `AGENTS.md` before making changes. This is a team project: each agent needs an agreed task scope, its own branch and worktree, and a reviewed PR. Read `docs/PROJECT.md` and relevant entries in `docs/DECISIONS.md`. Preserve other contributors' work.

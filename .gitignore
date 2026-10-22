@@ -1,0 +1,47 @@
+# Secrets and local configuration
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# Dependencies
+node_modules/
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+
+# Build, test, and tool output
+dist/
+build/
+.next/
+.nuxt/
+.output/
+coverage/
+htmlcov/
+.coverage
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+*.tsbuildinfo
+*.log
+
+# Local agent checkouts and scratch data
+.worktrees/
+worktrees/
+.tmp/
+tmp/
+
+# Editors and operating systems
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.example.json
+*.swp
+*~
+
+# Commit your package manager lockfiles and shared agent instructions.

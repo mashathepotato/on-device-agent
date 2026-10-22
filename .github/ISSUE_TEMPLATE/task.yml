@@ -1,0 +1,37 @@
+name: Team task
+description: Agree on ownership and boundaries before an agent starts.
+title: "[Task] "
+body:
+  - type: textarea
+    id: outcome
+    attributes:
+      label: Outcome and acceptance criteria
+      description: What should work when this task is done?
+    validations:
+      required: true
+  - type: input
+    id: owner
+    attributes:
+      label: Owner and reviewer
+      description: One agreed owner (human or agent) and a human reviewer. Also assign the issue where possible.
+    validations:
+      required: true
+  - type: textarea
+    id: scope
+    attributes:
+      label: Scope and boundaries
+      description: Files or areas this task may change; what is outside its scope?
+    validations:
+      required: true
+  - type: textarea
+    id: dependencies
+    attributes:
+      label: Dependencies and overlaps
+      description: Link related tasks and PRs. Agree on shared file ownership before editing.
+  - type: textarea
+    id: validation
+    attributes:
+      label: Validation plan
+      description: How will the reviewer know this works?
+    validations:
+      required: true
