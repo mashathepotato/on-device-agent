@@ -6,9 +6,9 @@ Read [AGENTS.md](AGENTS.md) and the [project context](docs/PROJECT.md). The same
 
 Clone this repository and agree on the project brief in `docs/PROJECT.md`. The starter requires only Git and Python 3.9+; your application can use any stack.
 
-GitHub Actions is enabled in `.github/workflows/checks.yml` for the starter tests. Extend it with application checks when the stack is chosen. You can run the same tests locally with `python3 -m unittest discover -s tests -v`.
+CI is intentionally disabled for the hackathon to avoid automated notification emails. Run the starter tests locally with `python3 -m unittest discover -s tests -v`.
 
-The repository administrator should configure a ruleset for the default branch: require PRs, a reviewer, and the `Starter checks` CI status; block force pushes and deletion. Review the available protection options for your GitHub plan. Template copies do not automatically inherit repository settings, secrets, or permissions. Enable issues if unavailable. This starter does not configure these controls for you.
+The repository administrator should configure a ruleset for the default branch: require PRs and a reviewer; block force pushes and deletion. Review the available protection options for your GitHub plan. Template copies do not automatically inherit repository settings, secrets, or permissions. Enable issues if unavailable. This starter does not configure these controls for you.
 
 ## Take a task
 

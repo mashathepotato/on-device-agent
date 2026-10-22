@@ -26,7 +26,7 @@ You are one contributor among humans and other agents. Preserve their work. Thes
 - Fetch the current default branch before handing off. Merge it into your own branch when needed; avoid rebasing already shared history. Resolve conflicts with affected owners instead of choosing “ours” or “theirs” wholesale.
 - Run the project checks listed in `docs/PROJECT.md`. If a check cannot run, report why and the remaining risk.
 - Push only your task branch. Open a PR with the task, scope, changes, validation, and remaining work. Link the issue and alert the designated reviewer only through channels the human authorized.
-- Do not merge, change protections, publish, or deploy unless the human explicitly authorized that action. Required CI and reviews still apply. One integrator at a time handles overlapping PRs.
+- Do not merge, change protections, publish, or deploy unless the human explicitly authorized that action. Required reviews still apply. CI is intentionally disabled; run project checks locally. One integrator at a time handles overlapping PRs.
 - Before ending work, update your task’s context handoff and link it on the PR or task issue: branch/PR, completed work, checks, blockers, and the next action. If posting is not authorized, provide that handoff in chat for the human to share.
 - Remove only your own worktrees and branches, after the work is safely merged or the human explicitly approves disposal. Never prune someone else’s active checkout.
 

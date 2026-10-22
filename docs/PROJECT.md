@@ -37,7 +37,7 @@ python3 -m unittest discover -s tests -v
 
 - **App install:** Not configured
 - **App dev server:** Not configured
-- **App test / lint / build:** Not configured — replace these entries and enable/extend the CI example in `docs/checks.yml.example` when adding the app. The starter checks are already enabled in `.github/workflows/checks.yml`.
+- **App test / lint / build:** Not configured — add local commands when adding the app. CI is intentionally disabled to avoid automated notification emails.
 - **Deploy:** Not configured; requires explicit authorization.
 
 ## Current priorities

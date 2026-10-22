@@ -28,6 +28,6 @@ Open the printed checkout in your coding harness. Keep a short handoff in `conte
 - [Agent handoffs](context/README.md)
 - [Supporting docs](docs/README.md)
 
-GitHub Actions runs the starter tests on PRs and pushes to `main`. Add application checks when the stack is chosen. Repository rules and review requirements must be configured separately by an administrator.
+Run checks locally. CI is intentionally disabled for the hackathon to avoid automated notification emails. Repository rules and review requirements must be configured separately by an administrator.
 
 Bootstrapped from [Agent Team Starter](https://github.com/mashathepotato/agent-team-starter), revision `ba2f2fcee3e0c929164284bfbedbb54adeaccff3`. The starter's MIT license is retained in [LICENSE](LICENSE).

@@ -15,5 +15,5 @@ Imported the starter, removed its historical task handoff, tailored onboarding t
 
 - **Next action and owner:** Masha/team to agree on product scope, platform, reviewer, and demo criteria; create scoped task issues before implementation.
 - **Dependencies / blockers:** Product and stack decisions remain open.
-- **Checks and results:** `python3 -m unittest discover -s tests -v`: all six tests passed. `git diff --cached --check`: passed before commit. GitHub Actions results are available after push.
+- **Checks and results:** `python3 -m unittest discover -s tests -v`: all six tests passed. `git diff --cached --check`: passed before commit. The CI workflow was subsequently removed at the user’s request; run checks locally.
 - **Relevant context:** [Project brief](../../../docs/PROJECT.md), [plan](../../../docs/plans.md), [bootstrap decision](../../../docs/DECISIONS.md).
