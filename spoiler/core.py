@@ -68,7 +68,7 @@ class Engine:
                 raw=json.load(response)
             inference_ms=round((time.perf_counter()-inference_started)*1000,2)
             output=json.loads(raw['message']['content'])
-            rating=preview_rating(output)
+            rating=preview_rating(output,preview)
             summary=preview_summary(output)
             fields='URL + title'+(' + search snippet' if preview['snippet'] else ' (no snippet available)')
             result={'mode':mode,'model':self.models[mode],'click_value':rating,'preview_only':True,
