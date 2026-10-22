@@ -5,10 +5,10 @@ Keep this brief current as the team agrees on the hackathon scope. Undecided ite
 ## What we are building
 
 - **Name:** On-device Agent
-- **Problem and users:** Not decided
-- **Success looks like:** Not decided
+- **Problem and users:** Exploring local protection for people using AI agents: detect prompt injection in webpages/files or review sensitive data before sending. Final use case is not selected.
+- **Success looks like:** A narrow, working offline demo on a consumer device, with a measured comparison between the original and fine-tuned model.
 - **Out of scope:** Not decided
-- **Deadline or demo:** Not decided
+- **Deadline or demo:** Two-hour hackathon build; prepare a short final demonstration. Exact event deadline/presentation format to confirm.
 
 ## People and coordination
 
@@ -21,7 +21,7 @@ Keep this brief current as the team agrees on the hackathon scope. Undecided ite
 
 ## Technical context
 
-- **Stack and architecture:** Not chosen; this starter does not include an application.
+- **Stack and architecture:** Application stack undecided. Required model: Liquid AI LFM2.5-1.2B; required training framework: White Circle Halo. Confirm the exact Base/Instruct checkpoint with organizers. Final inference must run locally on a consumer device; GPU training is provided.
 - **Source layout and module boundaries:** Define when choosing the stack.
 - **Shared interfaces:** Record contracts and their owners here before parallel implementation.
 - **External services / data:** None configured. Add only approved services and data sources.
@@ -39,6 +39,10 @@ python3 -m unittest discover -s tests -v
 - **App dev server:** Not configured
 - **App test / lint / build:** Not configured — add local commands when adding the app. CI is intentionally disabled to avoid automated notification emails.
 - **Deploy:** Not configured; requires explicit authorization.
+
+## Hackathon context
+
+Read [the shared hackathon brief](notes/hackathon-brief.md) for constraints, candidate demos, dataset leads, and evaluation pitfalls. These are proposals, not an approved implementation scope.
 
 ## Current priorities
 
