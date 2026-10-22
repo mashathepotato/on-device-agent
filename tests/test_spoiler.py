@@ -24,14 +24,16 @@ class SpoilerTests(unittest.TestCase):
 
     def test_verified_quote_and_cache(self):
         engine=Engine()
-        with patch('urllib.request.urlopen',return_value=self.response({'spoiler':'Banana peels.','evidence':'banana peels'})) as call:
+        with patch('urllib.request.urlopen',return_value=self.response({'sentence':1})) as call:
             first=engine.generate('What does he save?',self.article)
             second=engine.generate('What does he save?',self.article)
         self.assertTrue(first['evidence_verified']);self.assertTrue(second['cache_hit']);self.assertEqual(call.call_count,1)
         self.assertEqual(first['load_ms'],123)
+        self.assertEqual(first['spoiler'], 'The gardener saves banana peels because they enrich compost.')
+        self.assertIn(first['spoiler'], first['evidence'])
 
-    def test_rejects_fabricated_evidence_and_malformed_outputs(self):
-        for output in [{'spoiler':'Apples','evidence':'apple seeds'}, [], 'text', {'spoiler':3,'evidence':'banana'}]:
+    def test_rejects_invalid_sentence_ids_and_malformed_outputs(self):
+        for output in [{'sentence':0}, {'sentence':999}, {'sentence':'1'}, {'sentence':True}, [], 'text']:
             with patch('urllib.request.urlopen',return_value=self.response(output)):
                 self.assertFalse(Engine().generate('Hook',self.article)['evidence_verified'])
 

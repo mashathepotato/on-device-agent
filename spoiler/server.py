@@ -1,16 +1,19 @@
-"""Loopback-only API and demo. No arbitrary-URL fetching or cloud endpoints."""
+"""Loopback-only API and demo. Public article fetch, extraction, and local inference."""
 import json
 import mimetypes
 import os
 import secrets
+import time
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from .core import Engine
+from .articles import fetch_article, ArticleError
+from .extension_id import EXTENSION_ID
 
 ROOT = Path(__file__).resolve().parent.parent
 TOKEN = secrets.token_urlsafe(24)
 ENGINE = Engine()
-EXTENSION = os.environ.get('SPOILER_EXTENSION_ORIGIN', '')
+EXTENSION = os.environ.get('SPOILER_EXTENSION_ORIGIN', 'chrome-extension://' + EXTENSION_ID)
 ORIGIN = 'http://127.0.0.1:8765'
 
 
@@ -61,9 +64,13 @@ class Handler(BaseHTTPRequestHandler):
         self.wfile.write(data)
 
     def do_POST(self):
+        if self.path == '/api/pair':
+            if not self.allowed() or self.headers.get('Origin') != EXTENSION:
+                return self.reply(403, {'error': 'Only the installed Get to the Point extension can pair'})
+            return self.reply(200, {'token': TOKEN, 'models': ENGINE.models})
         if not self.allowed() or self.headers.get('X-Spoiler-Token') != TOKEN:
             return self.reply(403, {'error': 'Origin/token denied'})
-        if self.path != '/api/spoil':
+        if self.path not in ('/api/spoil', '/api/spoil-link'):
             return self.reply(404, {'error': 'Not found'})
         try:
             length = int(self.headers.get('Content-Length', '0'))
@@ -72,8 +79,18 @@ class Handler(BaseHTTPRequestHandler):
             body = json.loads(self.rfile.read(length))
             if not isinstance(body, dict):
                 raise ValueError('Request must be a JSON object')
-            result = ENGINE.generate(body.get('headline'), body.get('article'), body.get('mode', 'original'))
+            if self.path == '/api/spoil-link':
+                started = time.perf_counter()
+                source = fetch_article(body.get('url'))
+                headline = body.get('headline') or source['article_title']
+                result = ENGINE.generate(headline, source['article'], body.get('mode', 'original'))
+                result.update({key: value for key, value in source.items() if key != 'article'})
+                result['total_ms'] = round((time.perf_counter()-started)*1000, 2)
+            else:
+                result = ENGINE.generate(body.get('headline'), body.get('article'), body.get('mode', 'original'))
             self.reply(200, result)
+        except ArticleError as error:
+            self.reply(422, {'error': str(error)})
         except (ValueError, TypeError) as error:
             self.reply(400, {'error': str(error)})
         except Exception as error:

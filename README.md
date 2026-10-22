@@ -34,4 +34,4 @@ Bootstrapped from [Agent Team Starter](https://github.com/mashathepotato/agent-t
 
 ## Clickbait spoiler MVP
 
-Run local LFM inference, browser extension, Webis preparation, and baseline evaluation: see [setup and limitations](docs/SPOILER.md). No tuned checkpoint has been trained yet.
+Spoil headline links inline on a feed/search page without opening or pasting the article. Includes local LFM inference, public article retrieval, browser extension, and Webis/Halo tooling. See [setup and limitations](docs/SPOILER.md). No tuned checkpoint has been trained yet.

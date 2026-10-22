@@ -1,0 +1,233 @@
+{
+  "protocol": "source-sentence-selector-v1",
+  "hardware": "Apple M4, arm64 macOS, 24 GiB unified RAM",
+  "runtime": "Ollama 0.32.5",
+  "model": "hf.co/LiquidAI/LFM2.5-1.2B-Instruct-GGUF:Q4_K_M",
+  "ollama_model_id": "5791ac70d52d",
+  "split": "first 30 official validation rows, already inspected during earlier prompt development",
+  "data_sha256": "b984ae1c7eb344afe44e8a3563e10b5c300b8cd1d196a2df51e9038de57bd7bd",
+  "summary": {
+    "original": {
+      "n": 30,
+      "mean_token_f1": 0.084811570445795,
+      "exact_match": 0.03333333333333333,
+      "quote_verified_rate": 1,
+      "median_ms": 596.71,
+      "p95_ms": 1436.69,
+      "first_request_ms": 775.28
+    }
+  },
+  "settings": {
+    "temperature": 0,
+    "seed": 42,
+    "num_predict": 32,
+    "num_ctx": 8192
+  },
+  "manual_review": {
+    "strict_resolves_hook": 3,
+    "total": 30,
+    "row_numbers_1_based": [
+      1,
+      7,
+      21
+    ],
+    "partial_answer_rows": [
+      19
+    ],
+    "method": "Single implementer compared selected sentence against headline and references; unblinded, subjective diagnostic. Source presence is not hook resolution."
+  },
+  "data_manifest": {
+    "source": "https://zenodo.org/api/records/8136637/files/webis-clickbait-22.zip/content",
+    "license": "CC-BY-4.0",
+    "zip_sha256": "30acf935efc82e4f99d45943827c4e14551d1554bc43514c90e4948c1514586b",
+    "splits": {
+      "train": {
+        "count": 3200,
+        "sft_count": 2250,
+        "sha256": "8acc41ce1c8554987b9931d5b4f2694bfad7650a64f961a8ab6e02ff27e7f15f"
+      },
+      "validation": {
+        "count": 800,
+        "sft_count": 562,
+        "sha256": "b984ae1c7eb344afe44e8a3563e10b5c300b8cd1d196a2df51e9038de57bd7bd"
+      },
+      "test": {
+        "count": 1000,
+        "sft_count": 707,
+        "sha256": "685a3e298939573cc3914408a85284d69b94901e60b60069036812aa27d3df45"
+      }
+    },
+    "cross_split_duplicates": [
+      {
+        "kind": "article",
+        "id": "07133166-42e5-4342-afce-fe79121f5510",
+        "splits": [
+          "train",
+          "validation"
+        ]
+      },
+      {
+        "kind": "article",
+        "id": "611e3a1f-7e86-4140-bc32-8f6bc44bd201",
+        "splits": [
+          "train",
+          "validation"
+        ]
+      },
+      {
+        "kind": "article",
+        "id": "24e3d567-7e84-41c5-9225-f08b5d42965a",
+        "splits": [
+          "train",
+          "validation"
+        ]
+      },
+      {
+        "kind": "article",
+        "id": "d7fb147b-c0b6-4608-a465-1baf5e1e67dc",
+        "splits": [
+          "train",
+          "validation"
+        ]
+      },
+      {
+        "kind": "article",
+        "id": "24d1a065-0cb5-4f61-9e65-671621b746b9",
+        "splits": [
+          "train",
+          "validation"
+        ]
+      },
+      {
+        "kind": "article",
+        "id": "efa6b27b-cd01-4d7c-914b-fded6662a31b",
+        "splits": [
+          "train",
+          "validation"
+        ]
+      },
+      {
+        "kind": "article",
+        "id": "9af7b6db-2e83-47ae-89d8-4c0decd186e2",
+        "splits": [
+          "train",
+          "validation"
+        ]
+      },
+      {
+        "kind": "article",
+        "id": "a23a62b8-588b-4551-a430-b1b7d65165b7",
+        "splits": [
+          "train",
+          "validation"
+        ]
+      },
+      {
+        "kind": "article",
+        "id": "cefaaa24-1dd6-4792-8bd6-4ad1d5d5c0a4",
+        "splits": [
+          "train",
+          "validation"
+        ]
+      },
+      {
+        "kind": "article",
+        "id": "cdb1fc24-3519-4a43-a4a8-08e380e0eb85",
+        "splits": [
+          "train",
+          "test"
+        ]
+      },
+      {
+        "kind": "article",
+        "id": "ecb8163c-c0c3-43f0-9d08-c30693130fe1",
+        "splits": [
+          "train",
+          "test"
+        ]
+      },
+      {
+        "kind": "article",
+        "id": "e5f34c4d-a14f-4752-8065-8bee98cbe34c",
+        "splits": [
+          "validation",
+          "test"
+        ]
+      },
+      {
+        "kind": "article",
+        "id": "591f13de-cab2-4c55-87bf-7a58d482348d",
+        "splits": [
+          "train",
+          "test"
+        ]
+      },
+      {
+        "kind": "article",
+        "id": "f1a6c33d-961d-4172-b9e1-1db9aa62c09b",
+        "splits": [
+          "train",
+          "test"
+        ]
+      },
+      {
+        "kind": "article",
+        "id": "f745a013-2e83-4416-bd52-848554cd07a9",
+        "splits": [
+          "train",
+          "test"
+        ]
+      },
+      {
+        "kind": "article",
+        "id": "9d1260cd-cb46-4db5-aef6-e3a54b51365d",
+        "splits": [
+          "train",
+          "test"
+        ]
+      },
+      {
+        "kind": "article",
+        "id": "0590d610-6dd7-41a0-a694-54a374e3b8d4",
+        "splits": [
+          "train",
+          "test"
+        ]
+      },
+      {
+        "kind": "article",
+        "id": "9acd39c1-0cb6-40fa-8c32-865837efcf37",
+        "splits": [
+          "train",
+          "test"
+        ]
+      },
+      {
+        "kind": "article",
+        "id": "b084e0fe-2ba5-427e-8da4-c07fd59077f5",
+        "splits": [
+          "train",
+          "test"
+        ]
+      },
+      {
+        "kind": "article",
+        "id": "343bca6d-b428-41a5-bd15-94c006f06370",
+        "splits": [
+          "train",
+          "test"
+        ]
+      },
+      {
+        "kind": "article",
+        "id": "eed510f9-82bf-4d73-9ef4-a0a3d5f11268",
+        "splits": [
+          "train",
+          "test"
+        ]
+      }
+    ],
+    "training_policy": "Official raw splits unchanged; SFT train excludes exact normalized article duplicates of either held-out split. Validation/test remain frozen."
+  },
+  "limitations": "Integer source selection prevents fabricated quoted text but many selections remain irrelevant. Not a trained-model comparison and not an untouched final-test score. UI smoke inference may have run concurrently."
+}

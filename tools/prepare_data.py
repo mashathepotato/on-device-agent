@@ -5,7 +5,7 @@ import json
 from pathlib import Path
 import urllib.request
 import zipfile
-from spoiler.core import MAX_CHARS, messages
+from spoiler.core import MAX_CHARS, messages, candidates
 
 URL = 'https://zenodo.org/api/records/8136637/files/webis-clickbait-22.zip/content'
 
@@ -41,14 +41,18 @@ def main():
             path.write_text(''.join(json.dumps(r,ensure_ascii=False)+'\n' for r in rows))
             sft = []
             for row in rows:
-                # Preserve human target verbatim; no fabricated sentence/evidence annotations.
+                # Deterministic weak label: first displayed candidate containing the exact human spoiler.
+                # The sentence ID is derived, not a human evidence annotation.
                 if row['type'] not in ('phrase','passage') or len(row['references']) != 1: continue
                 if split == 'train' and hashlib.sha256(' '.join(row['article'].lower().split()).encode()).hexdigest() in heldout_articles: continue
                 target = row['references'][0]
                 if target not in row['article'][:MAX_CHARS]: continue
                 if len(target.split()) > 60: continue
+                choices = candidates(row['article'][:MAX_CHARS])
+                selected = next((i+1 for i, sentence in enumerate(choices) if target in sentence), None)
+                if selected is None: continue
                 sft.append({'messages':messages(row['headline'],row['article'][:MAX_CHARS])+[
-                    {'role':'assistant','content':json.dumps({'spoiler':target,'evidence':target},ensure_ascii=False)}]})
+                    {'role':'assistant','content':json.dumps({'sentence':selected})}]})
             (out/(split+'.sft.jsonl')).write_text(''.join(json.dumps(r,ensure_ascii=False)+'\n' for r in sft))
             manifest['splits'][split] = {'count':len(rows),'sft_count':len(sft),'sha256':hashlib.sha256(path.read_bytes()).hexdigest()}
     seen_ids = {}; seen_content = {}; leaks = []

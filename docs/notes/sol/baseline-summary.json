@@ -226,5 +226,6 @@
     ],
     "training_policy": "Official raw splits unchanged; SFT train excludes exact normalized article duplicates of either held-out split. Validation/test remain frozen."
   },
-  "limitations": "Prompt was revised once after inspecting initial validation failures. This is a diagnostic, not untouched final test. No tuned checkpoint exists; no improvement measured. Other UI smoke inference may have run concurrently, so timings are approximate single-device observations."
+  "limitations": "Prompt was revised once after inspecting initial validation failures. This is a diagnostic, not untouched final test. No tuned checkpoint exists; no improvement measured. Other UI smoke inference may have run concurrently, so timings are approximate single-device observations.",
+  "protocol_status": "LEGACY generative JSON spoiler+evidence protocol, superseded by source-sentence-selector-v1; not current app performance"
 }

@@ -35,8 +35,8 @@ These check the starter tooling, not your future application:
 python3 -m unittest discover -s tests -v
 ```
 
-- **App install:** Python standard library; install Ollama and pull official LFM weights (see `docs/SPOILER.md`).
-- **App dev server:** `python3 -m spoiler.server` → http://127.0.0.1:8765
+- **App install:** Python venv + `pip install -r requirements.txt`; install Ollama and pull official LFM weights (see `docs/SPOILER.md`).
+- **App dev server:** `.venv/bin/python -m spoiler.server` → http://127.0.0.1:8765
 - **App test / lint / build:** `python3 -m unittest discover -s tests -v`; `node --check web/app.js`; `node --check extension/popup.js`. CI remains disabled.
 - **Deploy:** Not configured; requires explicit authorization.
 
