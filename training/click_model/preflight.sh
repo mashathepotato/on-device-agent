@@ -4,6 +4,7 @@ set -euo pipefail
 nvidia-smi
 command -v halo
 python - <<'PY'
+import os
 import torch
 from transformers import AutoConfig, AutoTokenizer
 from src.data.collators.completions_only import DataCollatorForCompletionOnlyLM
@@ -14,8 +15,8 @@ print('model_type:', c.model_type, 'GPU:', torch.cuda.get_device_name())
 tokenizer = AutoTokenizer.from_pretrained('LiquidAI/LFM2.5-1.2B-Instruct')
 if tokenizer.pad_token_id is None: tokenizer.pad_token = tokenizer.eos_token
 collator = DataCollatorForCompletionOnlyLM('<|im_start|>assistant\n', tokenizer=tokenizer)
-for row in load_from_disk('/data/click-v2-halo')['train']:
-    encoded = tokenizer.apply_chat_template(row['messages'], tokenize=True)
+for row in load_from_disk(os.environ.get('SPOILER_HALO_DATASET', '/data/click-v2-halo512'))['train']:
+    encoded = tokenizer.apply_chat_template(row['messages'], tokenize=True, return_dict=False)
     labels = collator([{'input_ids':encoded}])['labels'][0]
     supervised = labels[labels != -100]
     assert 0 < len(supervised) < len(encoded), 'Empty or unmasked assistant target'

@@ -20,7 +20,7 @@ def main():
         for row in records:
             if row['id'] in seen: raise ValueError('Duplicate training/evaluation ID')
             seen.add(row['id'])
-            tokens = tokenizer.apply_chat_template(row['messages'], tokenize=True)
+            tokens = tokenizer.apply_chat_template(row['messages'], tokenize=True, return_dict=False)
             if len(tokens) > args.max_length:
                 dropped[split].append(row['id']); continue
             kept.append({'messages':row['messages']})

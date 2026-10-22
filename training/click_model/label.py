@@ -70,7 +70,7 @@ def main():
                 'messages': [{'role':'user', 'content':json.dumps(teacher_input)}]})
             content = ''.join(c['text'] for c in response['content'] if c['type']=='text').strip()
             if content.startswith('```'): content = content.split('\n',1)[1].rsplit('```',1)[0]
-            result = json.loads(content)
+            result, _ = json.JSONDecoder().raw_decode(content[content.index('{'):])
             target = validate({'sentence':sentence, 'worth_clicking':result['worth_clicking']}, len(choices))
             return {'id':row['id'], 'input_sha256':key, 'teacher_model':args.model,
                     'teacher_response_id':response['id'], 'usage':response.get('usage'),

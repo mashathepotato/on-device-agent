@@ -1,6 +1,6 @@
 # Chrome extension model handoff
 
-User requested ONNX after fine-tuning. No trained checkpoint or ONNX artifact exists yet: White Circle GPU endpoint is still missing. Owner Codex handles training/export; teammate owns extension integration. No teammate messages sent.
+User requested ONNX after fine-tuning. Actual training is complete. The best trained checkpoint is `/data/checkpoints/lfm-click-v2/checkpoint-128`. User requested immediate save before ONNX export or generation comparison; no ONNX artifact exists yet. Owner Codex handles training/export; teammate owns extension integration. No teammate messages sent.
 
 ## Export path
 
@@ -10,7 +10,7 @@ Use saved **Hugging Face safetensors weights**, not the Ollama GGUF. After train
 git clone https://github.com/Liquid4All/onnx-export.git /data/onnx-export-browser
 git -C /data/onnx-export-browser checkout 5ae758991464f2acd77c4ba5b654a9f32dbd60ea
 python3 -m training.click_model.export_onnx \
-  --checkpoint /data/checkpoints/lfm-click-v2 \
+  --checkpoint /data/checkpoints/lfm-click-v2/checkpoint-128 \
   --exporter-dir /data/onnx-export-browser --out /data/browser-models
 ```
 
