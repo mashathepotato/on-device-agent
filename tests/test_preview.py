@@ -17,11 +17,11 @@ class PreviewTests(unittest.TestCase):
         self.assertNotIn('secret',json.dumps(data))
 
     def test_invalid_preview_cannot_become_confident_output(self):
-        for value in [{'value_band':True},{'value_band':'unknown'},[],{'score':50}]:
+        for value in [{'score':True},{'score':101},[],{'score':'50'}]:
             with self.assertRaises(ValueError):preview_rating(value)
 
     def test_preview_inference_never_claims_article_was_read(self):
-        response=io.BytesIO(json.dumps({'message':{'content':json.dumps({'value_band':'useful','summary':'Three steps can help lower energy bills.'})},'eval_count':11}).encode())
+        response=io.BytesIO(json.dumps({'message':{'content':json.dumps({'score':72,'summary':'Three steps can help lower energy bills.'})},'eval_count':11}).encode())
         with patch('urllib.request.urlopen',return_value=response) as call:
             data=Engine().preview('https://example.com/guide','A practical energy guide','Three steps to lower energy bills.')
         payload=json.loads(call.call_args[0][0].data)
@@ -66,15 +66,3 @@ class PreviewTests(unittest.TestCase):
             handler.do_POST()
         self.assertEqual(handler.result[0],200)
         fetch.assert_not_called()
-
-    def test_preview_rubric_differentiates_value_without_arbitrary_numeric_output(self):
-        scores=[preview_rating({'value_band':band})['score'] for band in ('skip','low','uncertain','useful','high_value')]
-        self.assertEqual(scores,[10,30,50,70,90])
-        self.assertEqual(preview_rating({'value_band':'uncertain'})['band'],'amber')
-
-    def test_vague_sensational_title_cannot_get_high_value_without_detail(self):
-        preview=prepare_preview('https://example.com/secret','You will not believe this shocking secret')
-        rating=preview_rating({'value_band':'high_value'},preview)
-        self.assertEqual(rating['score'],10)
-        self.assertTrue(rating['headline_guard'])
-        self.assertEqual(rating['model_rubric_band'],'high_value')
