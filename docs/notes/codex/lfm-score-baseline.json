@@ -1,0 +1,32 @@
+{
+  "status": "baseline_only_gpu_access_missing",
+  "protocol": "sentence-click-score-v2",
+  "models": {
+    "baseline": "hf.co/LiquidAI/LFM2.5-1.2B-Instruct-GGUF:Q4_K_M"
+  },
+  "settings": {
+    "temperature": 0,
+    "seed": 42,
+    "num_predict": 48,
+    "num_ctx": 8192
+  },
+  "data_sha256": "2514fbaf6791a66316fd0dcec117f25f5169eb5f03ae06159f344b0ae95908b7",
+  "label_sha256": "d284fd01f28fb6bc254ccbfcce4cb750b2c9f8091023e72b890d33962ef73d2a",
+  "summary": {
+    "baseline": {
+      "n": 30,
+      "valid_json_rate": 1,
+      "token_f1": 0.06890202258365194,
+      "teacher_score_mae_valid_only": 29.666666666666668,
+      "click_accuracy": 0.5,
+      "median_ms": 674.5179375,
+      "p95_ms": 1578.2113749999987,
+      "under_2s_rate": 1,
+      "sentence_label_accuracy": 0.1,
+      "always_skip_accuracy": 0.8666666666666667,
+      "constant_40_score_mae": 14.233333333333333
+    }
+  },
+  "limitations": "Eligible phrase/passage validation subset; synthetic score agreement is not human utility. Exact source presence does not prove hook resolution. Warm uncached timings exclude fetch/extract. Cold timing not measured unless model was actually unloaded. Final test remains unused.",
+  "hardware": "Local Apple arm64, Ollama Q4_K_M. GPU training not executed."
+}
