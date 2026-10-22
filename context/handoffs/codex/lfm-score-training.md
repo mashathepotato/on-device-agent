@@ -35,3 +35,7 @@ User reported repeated 0/100 and requested prior behavior. Reverted deployment c
 ## Numeric preview fix after restoring old code
 
 Latest user preference: varied, conservative article-specific scores rather than all zeros or fixed high buckets. Original numeric preview prompt still collapsed to zero; tested JSON/string/few-shot variants were unreliable. Now the original LFM produces only a topic summary, and preview scores come from explicitly labelled conservative metadata signals. No randomness: repeat inputs remain consistent. Five API cases scored 44/51/32/81/6; actual Google cards show 51 and 39 with snippet context. 30 tests pass plus extension tests. Source/current server is this training checkout with tuned weights disabled. Details: `docs/notes/codex/preview-signal-scoring.md`. Cached protocols bumped; trained weights retained, no measured tuning-improvement claim, ONNX still pending.
+
+## Presentation saved for sharing
+
+User requested pushing the current work. Added `results/lfm-presentation-table.html` explicitly despite the results-directory ignore rule. The two-slide presentation includes the latest requested text removals. Fine-tuned ranges remain projections, as identified by the slide title; no new benchmark was run. Source changes were already on origin. Validation: 30 unit tests and JavaScript syntax checks pass. Local datasets, weights, and runtime logs remain excluded.
