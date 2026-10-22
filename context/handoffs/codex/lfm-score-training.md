@@ -25,3 +25,5 @@ python -m training.click_model.benchmark_hf --tuned /data/checkpoints/lfm-click-
 ```
 
 Browser integration notes: `docs/notes/codex/lfm-onnx-extension-handoff.md`. No organizer contacts or teammate messages sent. SSH agent forwarding disabled. No restart. No CI added or main merge.
+
+User subsequently requested an estimated table. Saved `docs/notes/codex/lfm-estimated-comparison.md` with measured baseline and explicitly illustrative projected ranges. These are planning assumptions, not trained-model benchmark results; no measured comparisons were changed.
