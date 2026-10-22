@@ -11,3 +11,21 @@ document.getElementById('enable').onclick=async()=>{
   try{const [tab]=await chrome.tabs.query({active:true,currentWindow:true});await chrome.scripting.executeScript({target:{tabId:tab.id},files:['content.js']});status.textContent='Buttons added to headline links. Scroll your feed and click Spoil.';window.close();}
   catch(error){status.textContent='Cannot read this page: '+error.message;}
 };
+document.getElementById('read').onclick=async()=>{
+  const button=document.getElementById('read');button.disabled=true;status.textContent='Reading visible article text locally…';
+  try {
+    const [tab]=await chrome.tabs.query({active:true,currentWindow:true});
+    if(!/^https?:\/\//.test(tab.url || '')) throw Error('Open a normal article webpage first.');
+    const [{result:page}]=await chrome.scripting.executeScript({target:{tabId:tab.id},func:()=>{
+      const source=document.querySelector('article') || document.querySelector('main') || document.body;
+      return {type:'spoil-visible',headline:document.querySelector('h1')?.innerText || document.title,article:source.innerText.slice(0,16001)};
+    }});
+    const response=await chrome.runtime.sendMessage(page);
+    if(!response?.ok) throw Error(response?.error || 'Could not read this article.');
+    const data=response.data;const value=data.click_value;status.replaceChildren();
+    if(value){const badge=document.createElement('strong');badge.textContent=`${value.score}/100 · ${value.label}`;badge.style.color=({green:'#14532d',amber:'#713f12',red:'#991b1b'})[value.band]||'#17392e';status.append(badge);const explanation=document.createElement('p');explanation.textContent=value.reason+' '+value.disclaimer;status.append(explanation);}
+    const answer=document.createElement('p');answer.textContent=data.spoiler||data.status;status.append(answer);
+    const note=document.createElement('small');note.textContent=`Visible page text · ${data.request_ms} ms${data.cache_hit?' (cached answer)':''}. ${data.truncated?'Partial article: first 16,000 characters. ':''}${data.status}`;status.append(note);
+  } catch(error){status.textContent=error.message;}
+  finally{button.disabled=false;}
+};

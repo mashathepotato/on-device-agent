@@ -59,7 +59,10 @@
         if(data.evidence){const quote=document.createElement('p');quote.className='quote';quote.textContent='“'+data.evidence+'”';panel.append(quote);}
         const meta=document.createElement('p');meta.className='meta';meta.textContent=`${data.total_ms} ms total · fetch/extract ${data.fetch_ms} ms${data.fetch_cache_hit?' (cached article)':''} · model ${data.request_ms} ms${data.cache_hit?' (cached answer)':''}\n${data.truncated?'PARTIAL ARTICLE: first 16,000 characters. ':''}${data.status}`;panel.append(meta);
         const source=document.createElement('a');source.href=data.source_url;source.target='_blank';source.rel='noopener noreferrer';source.textContent='Open source';panel.append(source);
-      } catch(error){panel.textContent=error.message;}
+      } catch(error){
+        panel.textContent=error.message;
+        const source=document.createElement('a');source.href=url;source.target='_blank';source.rel='noopener noreferrer';source.textContent='Open source normally';source.style.display='block';panel.append(source);
+      }
       finally{button.disabled=false;button.textContent='Spoil again';}
     });
   }

@@ -90,7 +90,8 @@ class Handler(BaseHTTPRequestHandler):
                 result = ENGINE.generate(body.get('headline'), body.get('article'), body.get('mode', 'original'))
             self.reply(200, result)
         except ArticleError as error:
-            self.reply(422, {'error': str(error)})
+            self.reply(422, {'error': str(error), 'code': error.code,
+                             'publisher_status': error.publisher_status})
         except (ValueError, TypeError) as error:
             self.reply(400, {'error': str(error)})
         except Exception as error:

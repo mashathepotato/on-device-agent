@@ -21,7 +21,10 @@ CACHE_LOCK = threading.Lock()
 
 
 class ArticleError(ValueError):
-    pass
+    def __init__(self, message, code='article_unavailable', publisher_status=None):
+        super().__init__(message)
+        self.code = code
+        self.publisher_status = publisher_status
 
 
 def public_target(url, deadline):
@@ -116,7 +119,11 @@ def fetch_article(url):
                     url = urljoin(canonical, location)
                     continue
                 if response.status != 200:
-                    raise ArticleError('Publisher returned HTTP %s; open the source normally if access is restricted' % response.status)
+                    raise ArticleError(
+                        'The publisher refused the article fetch (HTTP %s). '
+                        'The local server is connected. Open the source normally; '
+                        'if the article is readable, use the extension’s Read this open article button.' % response.status,
+                        code='publisher_http_error', publisher_status=response.status)
                 content_type = response.getheader('Content-Type','').lower()
                 if not any(t in content_type for t in ('text/html','application/xhtml+xml')):
                     raise ArticleError('This link is not an HTML article')
