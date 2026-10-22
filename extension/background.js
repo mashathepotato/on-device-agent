@@ -25,7 +25,7 @@ async function spoil(message) {
   const {mode = 'original'} = await chrome.storage.local.get('mode');
   const visible = message.type === 'spoil-visible';
   const path = visible ? '/api/spoil' : '/api/spoil-link';
-  const body = visible ? {headline:message.headline,article:message.article,mode} : {url:message.url,headline:message.headline,mode};
+  const body = visible ? {headline:message.headline,article:message.article,mode} : {url:message.url,headline:message.headline,snippet:message.snippet||'',mode};
   let data;
   try {data = await localRequest(path, body, pairingToken);}
   catch(error) {
