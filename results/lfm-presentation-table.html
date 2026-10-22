@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>On-device AI challenge</title>
+<style>
+*{box-sizing:border-box}body{margin:0;padding:64px;background:#f4f1ea;font-family:Inter,Arial,sans-serif;color:#202c28;min-height:100vh;display:grid;place-items:center}.card{width:100%;max-width:1080px;margin:auto;padding:48px;background:#fffefa;border:1px solid #e2e5dc;border-radius:28px;box-shadow:0 20px 60px #263e2c12}.eyebrow{color:#bc613c;font-size:13px;font-weight:700;letter-spacing:.16em;text-transform:uppercase}h1{margin:14px 0 36px;font-size:40px;letter-spacing:-.04em}table{width:100%;border-collapse:collapse;text-align:left}th{padding:18px 20px;border-bottom:2px solid #dce3d8;color:#65756b;font-size:15px;font-weight:600}td{padding:28px 20px;border-bottom:1px solid #e8ece4;font-size:25px}th:last-child,td:last-child{background:#edf5e9}td:first-child{font-size:21px}td:nth-child(2){color:#77817b}strong{color:#24643f;font-size:34px;font-weight:800;letter-spacing:-.03em}small{display:block;margin-top:6px;font-size:12px;font-weight:400}.note{margin:24px 0 0;color:#6c766e;font-size:14px;line-height:1.6}@media(max-width:700px){body{padding:16px}.card{padding:24px}h1{font-size:30px}th,td{padding:16px 10px}td,td:first-child{font-size:17px}strong{font-size:24px}}
+
+.deck{width:100%;max-width:1080px}.slide[hidden]{display:none!important}
+.intro{min-height:calc(100svh - 128px);display:flex;flex-direction:column;justify-content:center;padding:48px}
+.intro h1{font-size:clamp(56px,7.5vw,100px);font-weight:600;line-height:1.06;letter-spacing:-.055em;margin:24px 0}
+.intro p{font-size:clamp(20px,2.2vw,28px);line-height:1.5;color:#758078;margin:0;max-width:650px}
+.navigation{position:fixed;bottom:20px;right:32px;display:flex;align-items:center;gap:18px;color:#66736a;font-size:13px;opacity:.35;transition:opacity .15s}
+.navigation:hover,.navigation:focus-within{opacity:1}.navigation button{border:0;background:transparent;color:inherit;font:inherit;font-size:22px;cursor:pointer;padding:6px 10px;border-radius:6px}
+.navigation button:hover,.navigation button:focus-visible{background:#e5e9df;outline:2px solid #9cac9b;outline-offset:2px}.navigation button:disabled{opacity:.25;cursor:default}
+@media(max-width:700px){.intro{padding:24px;min-height:calc(100svh - 96px)}.navigation{right:20px;bottom:10px}}
+@media print{body{display:block;padding:0;background:white}.deck{max-width:none}.slide,.slide[hidden]{display:flex!important;min-height:100vh;break-after:page;box-shadow:none;border:0;border-radius:0;flex-direction:column;justify-content:center}.navigation{display:none}}
+</style>
+</head>
+<body>
+<main class="deck" aria-label="Two slide presentation">
+<section class="slide intro" id="slide-1" aria-label="Slide 1: The challenge">
+<div class="eyebrow">The challenge</div>
+<h1>On-device AI</h1>
+<p>One small model. One useful task.</p>
+</section>
+<section class="slide card" id="slide-2" aria-label="Slide 2: Model comparison" hidden>
+<div class="eyebrow">LFM2.5 · Clickbait spoiler</div>
+<h1>Baseline vs fine-tuned projections</h1>
+<table aria-label="Measured baseline and illustrative projections">
+<thead><tr><th>Metric</th><th>Baseline<small>Measured · 30-example pilot</small></th><th>Fine-tuned</th></tr></thead>
+<tbody><tr><td>Source-sentence match ↑</td><td>10%</td><td><strong>20–40%</strong></td></tr><tr><td>Click-score error ↓</td><td>29.7 points</td><td><strong>12–20</strong> points</td></tr></tbody>
+</table>
+</section>
+</main>
+<nav class="navigation" aria-label="Slide navigation">
+<button id="previous" type="button" aria-label="Previous slide">&#8592;</button>
+<span id="slide-count" aria-live="polite">1 / 2</span>
+<button id="next" type="button" aria-label="Next slide">&#8594;</button>
+</nav>
+<script>
+(() => {
+  const slides = Array.from(document.querySelectorAll('.slide'));
+  const previous = document.getElementById('previous');
+  const next = document.getElementById('next');
+  let index = 0;
+  function render() {
+    const requested = Number(location.hash.replace('#slide-', '')) - 1;
+    index = Number.isInteger(requested) && requested >= 0 && requested < slides.length ? requested : 0;
+    slides.forEach((slide, i) => { slide.hidden = i !== index; });
+    previous.disabled = index === 0;
+    next.disabled = index === slides.length - 1;
+    document.getElementById('slide-count').textContent = `${index + 1} / ${slides.length}`;
+    document.title = index === 0 ? 'On-device AI challenge' : 'LFM comparison';
+  }
+  function move(delta) {
+    location.hash = 'slide-' + (Math.max(0, Math.min(slides.length - 1, index + delta)) + 1);
+  }
+  previous.addEventListener('click', () => move(-1));
+  next.addEventListener('click', () => move(1));
+  window.addEventListener('hashchange', render);
+  window.addEventListener('keydown', event => {
+    if (event.altKey || event.ctrlKey || event.metaKey) return;
+    if (['ArrowRight', 'PageDown', ' '].includes(event.key)) { event.preventDefault(); move(1); }
+    if (['ArrowLeft', 'PageUp'].includes(event.key)) { event.preventDefault(); move(-1); }
+    if (event.key === 'Home') { event.preventDefault(); location.hash = 'slide-1'; }
+    if (event.key === 'End') { event.preventDefault(); location.hash = 'slide-' + slides.length; }
+  });
+  render();
+})();
+</script>
+</body>
+</html>

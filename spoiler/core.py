@@ -7,6 +7,7 @@ import threading
 import time
 import urllib.request
 from .scoring import VERSION as SCORE_VERSION, click_value
+from .preview import PROTOCOL as PREVIEW_PROTOCOL, SCHEMA as PREVIEW_SCHEMA, prepare_preview, preview_messages, preview_rating, preview_summary
 
 PROTOCOL = 'source-sentence-selector-v1'
 MODEL = 'hf.co/LiquidAI/LFM2.5-1.2B-Instruct-GGUF:Q4_K_M'
@@ -46,6 +47,40 @@ class Engine:
         self.models = {'original': os.environ.get('SPOILER_ORIGINAL_MODEL', MODEL),
                        'tuned': os.environ.get('SPOILER_TUNED_MODEL', '')}
         self.cache = {}
+
+    def preview(self, url, headline, snippet='', mode='original'):
+        if mode not in self.models or not self.models[mode]:
+            raise ValueError('Requested local checkpoint unavailable')
+        if mode=='tuned' and self.models['tuned']==self.models['original']:
+            raise ValueError('Comparison requires a distinct tuned checkpoint')
+        preview=prepare_preview(url,headline,snippet)
+        prompt=preview_messages(preview)
+        options=dict(OPTIONS,num_predict=64)
+        key=hashlib.sha256(json.dumps([PREVIEW_PROTOCOL,self.models[mode],prompt,options]).encode()).hexdigest()
+        started=time.perf_counter()
+        with LOCK:
+            if key in self.cache:
+                return dict(self.cache[key],cache_hit=True,request_ms=round((time.perf_counter()-started)*1000,2))
+            payload={'model':self.models[mode],'messages':prompt,'stream':False,'format':PREVIEW_SCHEMA,'keep_alive':'30m','options':options}
+            request=urllib.request.Request('http://127.0.0.1:11434/api/chat',json.dumps(payload).encode(),{'Content-Type':'application/json'})
+            inference_started=time.perf_counter()
+            with urllib.request.urlopen(request,timeout=180) as response:
+                raw=json.load(response)
+            inference_ms=round((time.perf_counter()-inference_started)*1000,2)
+            output=json.loads(raw['message']['content'])
+            rating=preview_rating(preview)
+            summary=preview_summary(output)
+            fields='URL + title'+(' + search snippet' if preview['snippet'] else ' (no snippet available)')
+            result={'mode':mode,'model':self.models[mode],'click_value':rating,'preview_only':True,
+                'summary':summary,'spoiler':'','evidence':'','evidence_verified':False,'source_url':url,
+                'status':'Article not read. Estimated from '+fields+'.',
+                'preview_fields':fields,'protocol':PREVIEW_PROTOCOL,'truncated':False,
+                'inference_ms':inference_ms,'request_ms':round((time.perf_counter()-started)*1000,2),
+                'load_ms':round(raw.get('load_duration',0)/1e6,2),'output_tokens':raw.get('eval_count'),
+                'cache_hit':False,'settings':options,'prompt_sha256':key}
+            if len(self.cache)>=100:self.cache.pop(next(iter(self.cache)))
+            self.cache[key]=result
+            return result
 
     def generate(self, headline, article, mode='original', use_cache=True):
         if mode == 'tuned' and self.models['tuned'] == self.models['original']:

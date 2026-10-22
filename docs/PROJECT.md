@@ -21,8 +21,8 @@ Keep this brief current as the team agrees on the hackathon scope. Undecided ite
 
 ## Technical context
 
-- **Stack and architecture:** MVP implementation in progress by Sol on `agent/sol/spoiler-mvp`. Required model family LFM2.5-1.2B; required training framework Halo. See `context/spoiler-idea.md` for scope and evaluation constraints.
-- **Source layout and module boundaries:** `spoiler/` Python API/inference, `web/` local demo, `extension/` MV3 popup, `tools/` data/evaluation, `training/` proposed Halo recipe. Sol owns these on the MVP branch.
+- **Stack and architecture:** Implemented Chrome extension and local Python service. Required model family LFM2.5-1.2B; required training framework Halo. See `context/spoiler-idea.md` for scope and evaluation constraints.
+- **Source layout and module boundaries:** `spoiler/` Python API/inference, `web/` local demo, `extension/` MV3 popup, `tools/` data/evaluation, `training/` Halo fine-tuning and export tooling.
 - **Shared interfaces:** Record contracts and their owners here before parallel implementation.
 - **External services / data:** None configured. Add only approved services and data sources.
 - **Environment:** Copy `.env.example` to `.env` only if needed. Never commit real secrets.
@@ -40,8 +40,12 @@ python3 -m unittest discover -s tests -v
 - **App test / lint / build:** `python3 -m unittest discover -s tests -v`; `node --check web/app.js`; `node --check extension/popup.js`. CI remains disabled.
 - **Deploy:** Not configured; requires explicit authorization.
 
+## Hackathon context
+
+The [shared hackathon brief](notes/hackathon-brief.md) preserves the initial constraints and candidate ideas. The implemented scope is the article-spoiler and reading-value demo described in the README.
+
 ## Current priorities
 
-1. Agree on the project brief and choose the stack.
-2. Define module boundaries and create scoped task issues.
-3. Build the smallest useful end-to-end version.
+1. Preserve the working local demo and completed H200 training run.
+2. Complete a matched original-versus-tuned quality benchmark before claiming improvement.
+3. Validate ONNX export before browser-only inference.

@@ -1,0 +1,20 @@
+{
+  "status": "training_complete_saved_at_user_request",
+  "checkpoint": "/data/checkpoints/lfm-click-v2/checkpoint-128",
+  "model_safetensors_bytes": 2340697936,
+  "train_examples": 512,
+  "validation_examples": 100,
+  "gpu": "NVIDIA H200",
+  "halo": "1.1.0",
+  "torch": "2.11.0+cu130",
+  "transformers": "5.16.1",
+  "train_runtime_seconds": 104.8,
+  "epochs": 2,
+  "optimizer_steps": 128,
+  "train_loss": 0.3539,
+  "validation_loss_epoch_1": 0.32363519072532654,
+  "validation_loss_epoch_2": 0.30707260966300964,
+  "baseline_vs_tuned_generation": "not_run",
+  "onnx_export": "not_run",
+  "limitations": "Validation loss is teacher-forced supervised loss, not summary quality, click accuracy or a baseline improvement measurement."
+}
