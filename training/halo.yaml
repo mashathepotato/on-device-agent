@@ -1,0 +1,27 @@
+# PROPOSED GPU recipe, NOT executed. Adapted against Halo 41da083.
+# DatasetDict exported by tools/export_halo.py, mounted at this path.
+model_name_or_path: LiquidAI/LFM2.5-1.2B-Instruct
+attn_implementation: sdpa
+dataset: /data/spoiler-halo
+conversation_field: messages
+test_size: null
+train_on_completions_only: false
+# Full-sequence loss avoids an unverified assistant-marker/masking recipe.
+packing: false
+max_length: 8192
+per_device_train_batch_size: 1
+per_device_eval_batch_size: 1
+gradient_accumulation_steps: 8
+gradient_checkpointing: true
+gradient_checkpointing_kwargs:
+  use_reentrant: false
+num_train_epochs: 1.0
+learning_rate: 2.0e-05
+optim: adamw_torch
+seed: 42
+output_dir: /data/checkpoints/spoiler-lfm
+save_strategy: epoch
+eval_strategy: epoch
+logging_steps: 10
+report_to: none
+use_peft: false

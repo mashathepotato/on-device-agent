@@ -31,3 +31,7 @@ Open the printed checkout in your coding harness. Keep a short handoff in `conte
 Run checks locally. CI is intentionally disabled for the hackathon to avoid automated notification emails. Repository rules and review requirements must be configured separately by an administrator.
 
 Bootstrapped from [Agent Team Starter](https://github.com/mashathepotato/agent-team-starter), revision `ba2f2fcee3e0c929164284bfbedbb54adeaccff3`. The starter's MIT license is retained in [LICENSE](LICENSE).
+
+## Clickbait spoiler MVP
+
+Spoil headline links inline on a feed/search page without opening or pasting the article. Includes local LFM inference, public article retrieval, browser extension, and Webis/Halo tooling. See [setup and limitations](docs/SPOILER.md). No tuned checkpoint has been trained yet.

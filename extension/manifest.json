@@ -1,0 +1,33 @@
+{
+  "manifest_version": 3,
+  "name": "Get to the Point \u2014 local spoiler",
+  "version": "0.2.0",
+  "description": "Reveal an article's withheld answer using a model on your device.",
+  "permissions": [
+    "activeTab",
+    "scripting",
+    "storage"
+  ],
+  "host_permissions": [
+    "http://127.0.0.1:8765/*"
+  ],
+  "action": {
+    "default_popup": "popup.html"
+  },
+  "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA1MmwDaMOfNjSuzCyyV0Ww/8OnnBCusYaPNvygWji0QDBfgTXcQn/M7o4ti7LsLweaOukZtHT2ty6qxA6lkX67lQcNNlRH0Oi1JMfRuurw22P4KS+ZDH0CKRCKR3rAIjoaHJ9JFIOGEDjWDLAnSyVJoo2t8K4L1HM2JHlYd2DFVZ7/mndl5NDzKTfXgDlbvx7jDoe+rhIo3eb5SO4m1ppqag5NyajHyNdweA0wrK0IOtFV0qfrqnt00wlHeShqZMTQZUcc+J+xotWArG1hPZNE17WmkbOLxiQqsiNuvWB3Ot7QYxf3SLD62bBJRPpA5y05MmTsut42sxvGA9X7N/gPwIDAQAB",
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "http://*/*",
+        "https://*/*"
+      ],
+      "js": [
+        "content.js"
+      ],
+      "run_at": "document_idle"
+    }
+  ]
+}
