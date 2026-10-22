@@ -1,0 +1,48 @@
+{
+  "status": "deployed_local_ollama",
+  "model": "lfm-click-tuned:checkpoint128",
+  "digest": "5de3d7d5e1f60458e1b26cee0f15073f0f5ae2171ef3c624ca86b4a6c6e7244d",
+  "size_bytes": 731153133,
+  "details": {
+    "parent_model": "",
+    "format": "gguf",
+    "family": "lfm2",
+    "families": [
+      "lfm2"
+    ],
+    "parameter_size": "1.2B",
+    "quantization_level": "Q4_K_M"
+  },
+  "checkpoint": "checkpoint-128",
+  "before_commit": "3d506a7",
+  "api": "http://127.0.0.1:8765",
+  "default_mode": "tuned",
+  "preview_policy": "Original checkpoint for metadata-only preview; specialist trained only on full articles.",
+  "smoke": [
+    {
+      "mode": "tuned",
+      "model": "lfm-click-tuned:checkpoint128",
+      "protocol": "sentence-click-score-v2",
+      "request_ms": 973.34,
+      "score": 22,
+      "valid_source_selection": true
+    },
+    {
+      "mode": "tuned",
+      "model": "lfm-click-tuned:checkpoint128",
+      "protocol": "sentence-click-score-v2",
+      "request_ms": 1206.52,
+      "score": 62,
+      "valid_source_selection": true
+    },
+    {
+      "mode": "tuned",
+      "model": "lfm-click-tuned:checkpoint128",
+      "protocol": "sentence-click-score-v2",
+      "request_ms": 981.45,
+      "score": 42,
+      "valid_source_selection": true
+    }
+  ],
+  "limitations": "Three article API smoke requests, not a quality or speed benchmark. No measured improvement claim. ONNX export still pending."
+}

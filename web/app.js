@@ -2,6 +2,7 @@ const $ = id => document.getElementById(id);
 let models={};
 fetch('/api/status').then(r=>r.json()).then(status=>{
   models=status.models;
+  $('mode').value=status.default_mode||'original';
   $('connection').textContent='Local LFM2.5 · article links fetched on demand';
   if(models.tuned){const tuned=$('mode').querySelector('[value=tuned]');tuned.disabled=false;tuned.textContent='Fine-tuned';const compare=$('mode').querySelector('[value=compare]');compare.disabled=false;compare.textContent='Compare both';}
 }).catch(()=>$('connection').textContent='Local server unavailable');

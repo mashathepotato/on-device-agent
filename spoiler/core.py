@@ -7,6 +7,7 @@ import threading
 import time
 import urllib.request
 from .scoring import VERSION as SCORE_VERSION, click_value
+from .joint import VERSION as JOINT_PROTOCOL, build_messages, schema as joint_schema, validate as validate_joint, rating as joint_rating
 from .preview import PROTOCOL as PREVIEW_PROTOCOL, SCHEMA as PREVIEW_SCHEMA, prepare_preview, preview_messages, preview_rating, preview_summary
 
 PROTOCOL = 'source-sentence-selector-v1'
@@ -46,17 +47,26 @@ class Engine:
     def __init__(self):
         self.models = {'original': os.environ.get('SPOILER_ORIGINAL_MODEL', MODEL),
                        'tuned': os.environ.get('SPOILER_TUNED_MODEL', '')}
+        self.default_mode = os.environ.get('SPOILER_DEFAULT_MODE', 'tuned' if self.models['tuned'] else 'original')
+        if self.default_mode not in self.models or not self.models[self.default_mode]:
+            raise ValueError('Configured default checkpoint unavailable')
+        self.joint = bool(self.models['tuned'])
         self.cache = {}
 
-    def preview(self, url, headline, snippet='', mode='original'):
+    def preview(self, url, headline, snippet='', mode=None):
+        mode = mode or self.default_mode
         if mode not in self.models or not self.models[mode]:
             raise ValueError('Requested local checkpoint unavailable')
         if mode=='tuned' and self.models['tuned']==self.models['original']:
             raise ValueError('Comparison requires a distinct tuned checkpoint')
+        requested_mode = mode
+        # The specialist was trained on full articles, not metadata-only summaries.
+        if mode == 'tuned':
+            mode = 'original'
         preview=prepare_preview(url,headline,snippet)
         prompt=preview_messages(preview)
         options=dict(OPTIONS,num_predict=112)
-        key=hashlib.sha256(json.dumps([PREVIEW_PROTOCOL,self.models[mode],prompt,options]).encode()).hexdigest()
+        key=hashlib.sha256(json.dumps([PREVIEW_PROTOCOL,requested_mode,self.models[mode],prompt,options]).encode()).hexdigest()
         started=time.perf_counter()
         with LOCK:
             if key in self.cache:
@@ -70,8 +80,9 @@ class Engine:
             output=json.loads(raw['message']['content'])
             rating=preview_rating(output)
             summary=preview_summary(output)
+
             fields='URL + title'+(' + search snippet' if preview['snippet'] else ' (no snippet available)')
-            result={'mode':mode,'model':self.models[mode],'click_value':rating,'preview_only':True,
+            result={'mode':mode,'requested_mode':requested_mode,'model':self.models[mode],'click_value':rating,'preview_only':True,
                 'summary':summary,'spoiler':'','evidence':'','evidence_verified':False,'source_url':url,
                 'status':'Article not read. Estimated from '+fields+'.',
                 'preview_fields':fields,'protocol':PREVIEW_PROTOCOL,'truncated':False,
@@ -82,7 +93,8 @@ class Engine:
             self.cache[key]=result
             return result
 
-    def generate(self, headline, article, mode='original', use_cache=True):
+    def generate(self, headline, article, mode=None, use_cache=True):
+        mode = mode or self.default_mode
         if mode == 'tuned' and self.models['tuned'] == self.models['original']:
             raise ValueError('Comparison requires a distinct tuned checkpoint')
         if mode not in self.models or not self.models[mode]:
@@ -92,14 +104,18 @@ class Engine:
         if not sentences:
             raise ValueError('No suitable source sentences found in this article')
         model = self.models[mode]
-        key = hashlib.sha256(json.dumps([PROTOCOL, SCORE_VERSION, model, messages(headline, article), OPTIONS]).encode()).hexdigest()
+        protocol = JOINT_PROTOCOL if self.joint else PROTOCOL
+        prompt = build_messages(headline, sentences) if self.joint else messages(headline, article)
+        options = dict(OPTIONS, num_predict=48) if self.joint else OPTIONS
+        output_schema = joint_schema(len(sentences)) if self.joint else {'type':'object','properties':{'sentence':{'type':'integer','minimum':0,'maximum':len(sentences)}},'required':['sentence'],'additionalProperties':False}
+        key = hashlib.sha256(json.dumps([protocol, SCORE_VERSION, model, prompt, options]).encode()).hexdigest()
         started = time.perf_counter()
         with LOCK:
             if use_cache and key in self.cache:
                 return dict(self.cache[key], cache_hit=True, request_ms=round((time.perf_counter()-started)*1000, 2))
-            payload = {'model': model, 'messages': messages(headline, article), 'stream': False,
-                       'format': {'type':'object','properties':{'sentence':{'type':'integer','minimum':0,'maximum':len(sentences)}},'required':['sentence'],'additionalProperties':False},
-                       'keep_alive': '30m', 'options': OPTIONS}
+            payload = {'model': model, 'messages': prompt, 'stream': False,
+                       'format': output_schema,
+                       'keep_alive': '30m', 'options': options}
             request = urllib.request.Request('http://127.0.0.1:11434/api/chat',
                                              json.dumps(payload).encode(), {'Content-Type': 'application/json'})
             inference_started = time.perf_counter()
@@ -112,6 +128,8 @@ class Engine:
                 output = {}
             if not isinstance(output, dict):
                 output = {}
+            if self.joint:
+                validate_joint(output, len(sentences))
             selected = output.get('sentence')
             valid = type(selected) is int and 1 <= selected <= len(sentences)
             spoiler = sentences[selected-1] if valid else ''
@@ -124,9 +142,9 @@ class Engine:
                 if len(evidence) > 1200:
                     evidence = article[max(0,position-150):position+len(spoiler)+150].strip()
             result = {'mode': mode, 'model': model, 'spoiler': spoiler,
-                      'click_value': click_value(headline, article, valid),
+                      'click_value': joint_rating(output['worth_clicking'], mode) if self.joint else click_value(headline, article, valid),
                       'evidence': evidence, 'evidence_verified': bool(valid),
-                      'protocol':PROTOCOL, 'answer_method':'model-selected source sentence', 'selected_sentence':selected if valid else None,
+                      'protocol':protocol, 'answer_method':'model-selected source sentence', 'selected_sentence':selected if valid else None,
                       'candidate_count':len(sentences),
                       'status': 'Model-selected source sentence; check that it answers the headline' if valid else 'The model did not select a useful source sentence',
                       'truncated': truncated, 'article_chars_used': len(article),
@@ -135,7 +153,7 @@ class Engine:
                       'prompt_eval_ms': round(raw.get('prompt_eval_duration', 0)/1e6, 2),
                       'generation_ms': round(raw.get('eval_duration', 0)/1e6, 2),
                       'output_tokens': raw.get('eval_count'), 'cache_hit': False,
-                      'settings': OPTIONS, 'prompt_sha256': key,
+                      'settings': options, 'prompt_sha256': key,
                       'rejected_output': output if not valid else None}
             if len(self.cache) >= 100:
                 self.cache.pop(next(iter(self.cache)))

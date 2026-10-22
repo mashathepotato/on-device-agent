@@ -4,6 +4,7 @@ document.getElementById('mode').onchange=()=>chrome.storage.local.set({mode:docu
 chrome.runtime.sendMessage({type:'status'}).then(response=>{
   if(!response?.ok)throw Error(response?.error||'Connection failed');
   const tuned=response.data.models.tuned;
+  chrome.storage.local.get('mode').then(s=>{if(!s.mode)document.getElementById('mode').value=response.data.default_mode||'original';});
   if(tuned){const option=document.querySelector('option[value=tuned]');option.disabled=false;option.textContent='Fine-tuned';}
   status.textContent='Connected. Public article fetch + local inference ready.';
 }).catch(error=>status.textContent=error.message);
