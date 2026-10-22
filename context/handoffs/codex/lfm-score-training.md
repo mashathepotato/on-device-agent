@@ -39,3 +39,7 @@ Latest user preference: varied, conservative article-specific scores rather than
 ## Presentation saved for sharing
 
 User requested pushing the current work. Added `results/lfm-presentation-table.html` explicitly despite the results-directory ignore rule. The two-slide presentation includes the latest requested text removals. Fine-tuned ranges remain projections, as identified by the slide title; no new benchmark was run. Source changes were already on origin. Validation: 30 unit tests and JavaScript syntax checks pass. Local datasets, weights, and runtime logs remain excluded.
+
+## README wrap-up
+
+Replaced scaffold README with product description, setup, current scoring behavior, and actual training status. Added `docs/images/get-to-the-point.png`, an actual browser screenshot after the live local service processed the NASA lunar-battery article (32/100 and a one-sentence summary). User requested merging completed project branches and local/Chrome cleanup. Local training weights and datasets are excluded from Git; retain them pending cleanup scope clarification.
