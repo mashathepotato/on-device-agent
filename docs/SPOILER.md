@@ -98,3 +98,11 @@ Actual local HTTP API, live publisher retrieval, Apple M4 / 24 GiB / Ollama 0.32
 - Identical repeat requests: **0.9–1.1 ms**, explicitly labelled article and response cache hits. These are not inference timings.
 
 The current selector's first 30 validation rows: median **597 ms** uncached model request, p95 **1,437 ms**, token F1 **.0848**, exact match **1/30**, valid source selection **30/30**. Single-reviewer strict hook resolution was only **3/30**, with one additional partial answer. Source copying is reliable by construction; relevant sentence selection remains weak. These two live successes are smoke tests, not a representative quality claim. Historic first-ever original-model loading took 7.4 seconds; current warm timings exclude that cold start. No tuned model or fine-tuning improvement exists. Full live smoke output and settings: `docs/notes/sol/live-smoke.json`.
+
+## Worth-clicking estimate
+
+Every response includes `click_value`: a 0–100 score, red/amber/green band, recommendation, and explanation. Both the extension panel and local feed display it above the spoiler. Green (65–100) means “Worth a click”, amber (40–64) “Maybe worth it”, red (0–39) “Probably skip”. Text labels accompany color for accessibility.
+
+This is `click-value-heuristic-v1`, an educated baseline guess, not a model confidence, factuality rating, personalized recommendation, or fine-tuned prediction. It adds no model call. Starting at 45, it rewards article substance (+10), how-to headline (+15), explanatory language (+8), research/findings mentions (+12), and concrete quantities (+5); it discounts short text (−15), headline hype (−20), and repeated sentences (−20). A missing selected answer subtracts 10 and caps the estimate at 60. Scores are clamped to 0–100. Signals are superficial and can be fooled; the UI labels the estimate “Baseline guess · not fine-tuned”. Partial-article scores cover only the scanned prefix.
+
+Spoiler sentence-selection training labels do not supervise reading value. Future fine-tuning needs separate human judgments of whether opening an article is worth the reader's time, plus a held-out scoring evaluation. Existing spoiler comparisons keep the same model prompt/schema; changing this heuristic does not change sentence selection. Bump the score version when changing weights/rules so inference cache keys change.

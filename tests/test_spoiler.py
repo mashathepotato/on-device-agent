@@ -31,6 +31,8 @@ class SpoilerTests(unittest.TestCase):
         self.assertEqual(first['load_ms'],123)
         self.assertEqual(first['spoiler'], 'The gardener saves banana peels because they enrich compost.')
         self.assertIn(first['spoiler'], first['evidence'])
+        self.assertIn('click_value', first)
+        self.assertEqual(first['click_value'], second['click_value'])
 
     def test_rejects_invalid_sentence_ids_and_malformed_outputs(self):
         for output in [{'sentence':0}, {'sentence':999}, {'sentence':'1'}, {'sentence':True}, [], 'text']:

@@ -6,6 +6,7 @@ import re
 import threading
 import time
 import urllib.request
+from .scoring import VERSION as SCORE_VERSION, click_value
 
 PROTOCOL = 'source-sentence-selector-v1'
 MODEL = 'hf.co/LiquidAI/LFM2.5-1.2B-Instruct-GGUF:Q4_K_M'
@@ -56,7 +57,7 @@ class Engine:
         if not sentences:
             raise ValueError('No suitable source sentences found in this article')
         model = self.models[mode]
-        key = hashlib.sha256(json.dumps([PROTOCOL, model, messages(headline, article), OPTIONS]).encode()).hexdigest()
+        key = hashlib.sha256(json.dumps([PROTOCOL, SCORE_VERSION, model, messages(headline, article), OPTIONS]).encode()).hexdigest()
         started = time.perf_counter()
         with LOCK:
             if use_cache and key in self.cache:
@@ -88,6 +89,7 @@ class Engine:
                 if len(evidence) > 1200:
                     evidence = article[max(0,position-150):position+len(spoiler)+150].strip()
             result = {'mode': mode, 'model': model, 'spoiler': spoiler,
+                      'click_value': click_value(headline, article, valid),
                       'evidence': evidence, 'evidence_verified': bool(valid),
                       'protocol':PROTOCOL, 'answer_method':'model-selected source sentence', 'selected_sentence':selected if valid else None,
                       'candidate_count':len(sentences),

@@ -47,6 +47,14 @@
         const response=await chrome.runtime.sendMessage({type:'spoil-link',url,headline});
         if(!response?.ok) throw Error(response?.error || 'The extension was reloaded; refresh this page.');
         const data=response.data;panel.replaceChildren();
+        if(data.click_value){
+          const value=data.click_value;
+          const colors={green:['#d9f3e2','#14532d'],amber:['#fff1c2','#713f12'],red:['#fee2e2','#991b1b']};
+          const [background,color]=colors[value.band]||colors.amber;
+          const badge=document.createElement('div');badge.style.cssText=`display:inline-block;padding:7px 11px;margin-bottom:8px;border-radius:8px;font:750 16px system-ui;background:${background};color:${color}`;badge.textContent=`${value.score}/100 · ${value.label}`;panel.append(badge);
+          const reason=document.createElement('p');reason.style.cssText='margin:0 0 6px;font-size:12px';reason.textContent=value.reason;panel.append(reason);
+          const note=document.createElement('p');note.className='meta';note.textContent=value.disclaimer;note.title=value.scope;panel.append(note);
+        }
         const answer=document.createElement('strong');answer.textContent=data.spoiler || data.status;panel.append(answer);
         if(data.evidence){const quote=document.createElement('p');quote.className='quote';quote.textContent='“'+data.evidence+'”';panel.append(quote);}
         const meta=document.createElement('p');meta.className='meta';meta.textContent=`${data.total_ms} ms total · fetch/extract ${data.fetch_ms} ms${data.fetch_cache_hit?' (cached article)':''} · model ${data.request_ms} ms${data.cache_hit?' (cached answer)':''}\n${data.truncated?'PARTIAL ARTICLE: first 16,000 characters. ':''}${data.status}`;panel.append(meta);
