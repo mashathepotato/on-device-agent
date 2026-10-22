@@ -1,10 +1,24 @@
 import time
 import unittest
 from unittest.mock import patch
+from types import SimpleNamespace
 from spoiler.articles import ArticleError, public_target, fetch_article
 
 
 class PublicArticleTests(unittest.TestCase):
+    def test_publisher_denial_is_distinct_from_local_connection_failure(self):
+        response = SimpleNamespace(status=403, getheader=lambda *args: None)
+        connection = SimpleNamespace(
+            sock=SimpleNamespace(shutdown=lambda *args: None), connect=lambda: None,
+            request=lambda *args, **kwargs: None, getresponse=lambda: response, close=lambda: None)
+        with patch('spoiler.articles.public_target',return_value=('https','example.com',443,'/blocked','93.184.216.34','https://example.com/blocked')), \
+             patch('spoiler.articles.PinnedHTTPS',return_value=connection):
+            with self.assertRaises(ArticleError) as failure:
+                fetch_article('https://example.com/blocked')
+        self.assertEqual(failure.exception.code, 'publisher_http_error')
+        self.assertEqual(failure.exception.publisher_status, 403)
+        self.assertIn('local server is connected', str(failure.exception))
+
     def test_rejects_local_and_non_http_destinations(self):
         for url in ['file:///etc/passwd','http://127.0.0.1/a','http://localhost/a',
                     'http://169.254.169.254/latest','http://[::1]/a','http://10.0.0.1/a',

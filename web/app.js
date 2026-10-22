@@ -11,13 +11,9 @@ function render(target,data,label){
   if(data.click_value){
     const value=data.click_value;
     const badge=document.createElement('div');badge.className='click-score '+value.band;badge.textContent=`${value.score}/100 · ${value.label}`;section.append(badge);
-    const reason=document.createElement('p');reason.className='score-reason';reason.textContent=value.reason;section.append(reason);
-    const note=document.createElement('p');note.className='score-note';note.textContent=value.disclaimer;note.title=value.scope;section.append(note);
   }
-  const answer=document.createElement('strong');answer.textContent=data.spoiler||data.status;section.append(answer);
-  if(data.evidence){const quote=document.createElement('blockquote');quote.textContent=data.evidence;section.append(quote);}
-  const timing=document.createElement('p');timing.className='meta';timing.textContent=`${data.total_ms} ms total · fetch/extract ${data.fetch_ms} ms${data.fetch_cache_hit?' (cached article)':''} · model ${data.request_ms} ms${data.cache_hit?' (cached answer)':''}\n${data.truncated?'PARTIAL ARTICLE: first 16,000 characters. ':''}${data.status}`;section.append(timing);
-  const link=document.createElement('a');link.href=data.source_url;link.target='_blank';link.rel='noopener noreferrer';link.textContent='Read source ↗';section.append(link);target.append(section);
+  const answer=document.createElement('p');answer.textContent=data.summary||data.spoiler||'No concise answer available.';section.append(answer);
+  target.append(section);
 }
 async function spoil(card){
   const button=card.querySelector('button');const target=card.querySelector('.answer');const link=card.querySelector('h2 a');

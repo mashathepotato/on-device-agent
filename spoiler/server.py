@@ -70,7 +70,7 @@ class Handler(BaseHTTPRequestHandler):
             return self.reply(200, {'token': TOKEN, 'models': ENGINE.models})
         if not self.allowed() or self.headers.get('X-Spoiler-Token') != TOKEN:
             return self.reply(403, {'error': 'Origin/token denied'})
-        if self.path not in ('/api/spoil', '/api/spoil-link'):
+        if self.path not in ('/api/spoil', '/api/spoil-link', '/api/preview'):
             return self.reply(404, {'error': 'Not found'})
         try:
             length = int(self.headers.get('Content-Length', '0'))
@@ -79,18 +79,30 @@ class Handler(BaseHTTPRequestHandler):
             body = json.loads(self.rfile.read(length))
             if not isinstance(body, dict):
                 raise ValueError('Request must be a JSON object')
-            if self.path == '/api/spoil-link':
+            if self.path == '/api/preview':
+                result = ENGINE.preview(body.get('url'), body.get('headline'), body.get('snippet',''), body.get('mode','original'))
+                result.update(total_ms=result['request_ms'],fetch_ms=0,fetch_cache_hit=False)
+            elif self.path == '/api/spoil-link':
                 started = time.perf_counter()
-                source = fetch_article(body.get('url'))
-                headline = body.get('headline') or source['article_title']
-                result = ENGINE.generate(headline, source['article'], body.get('mode', 'original'))
-                result.update({key: value for key, value in source.items() if key != 'article'})
+                try:
+                    source = fetch_article(body.get('url'))
+                except ArticleError as error:
+                    if not body.get('headline'): raise
+                    failed_fetch_ms=round((time.perf_counter()-started)*1000,2)
+                    result=ENGINE.preview(body.get('url'),body['headline'],body.get('snippet',''),body.get('mode','original'))
+                    result.update(fetch_ms=failed_fetch_ms,fetch_cache_hit=False,
+                                  fallback_reason=str(error),publisher_status=error.publisher_status)
+                else:
+                    headline = body.get('headline') or source['article_title']
+                    result = ENGINE.generate(headline, source['article'], body.get('mode', 'original'))
+                    result.update({key: value for key, value in source.items() if key != 'article'})
                 result['total_ms'] = round((time.perf_counter()-started)*1000, 2)
             else:
                 result = ENGINE.generate(body.get('headline'), body.get('article'), body.get('mode', 'original'))
             self.reply(200, result)
         except ArticleError as error:
-            self.reply(422, {'error': str(error)})
+            self.reply(422, {'error': str(error), 'code': error.code,
+                             'publisher_status': error.publisher_status})
         except (ValueError, TypeError) as error:
             self.reply(400, {'error': str(error)})
         except Exception as error:
