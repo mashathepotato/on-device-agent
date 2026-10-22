@@ -55,7 +55,7 @@ class Engine:
             raise ValueError('Comparison requires a distinct tuned checkpoint')
         preview=prepare_preview(url,headline,snippet)
         prompt=preview_messages(preview)
-        options=dict(OPTIONS,num_predict=112)
+        options=dict(OPTIONS,num_predict=64)
         key=hashlib.sha256(json.dumps([PREVIEW_PROTOCOL,self.models[mode],prompt,options]).encode()).hexdigest()
         started=time.perf_counter()
         with LOCK:
@@ -68,7 +68,7 @@ class Engine:
                 raw=json.load(response)
             inference_ms=round((time.perf_counter()-inference_started)*1000,2)
             output=json.loads(raw['message']['content'])
-            rating=preview_rating(output)
+            rating=preview_rating(preview)
             summary=preview_summary(output)
             fields='URL + title'+(' + search snippet' if preview['snippet'] else ' (no snippet available)')
             result={'mode':mode,'model':self.models[mode],'click_value':rating,'preview_only':True,

@@ -17,11 +17,11 @@ class PreviewTests(unittest.TestCase):
         self.assertNotIn('secret',json.dumps(data))
 
     def test_invalid_preview_cannot_become_confident_output(self):
-        for value in [{'score':True},{'score':101},[],{'score':'50'}]:
+        for value in [{'headline':True},{'headline':'Guide','snippet':None},[],{'score':50}]:
             with self.assertRaises(ValueError):preview_rating(value)
 
     def test_preview_inference_never_claims_article_was_read(self):
-        response=io.BytesIO(json.dumps({'message':{'content':json.dumps({'score':72,'summary':'Three steps can help lower energy bills.'})},'eval_count':11}).encode())
+        response=io.BytesIO(json.dumps({'message':{'content':json.dumps({'summary':'Three steps can help lower energy bills.'})},'eval_count':11}).encode())
         with patch('urllib.request.urlopen',return_value=response) as call:
             data=Engine().preview('https://example.com/guide','A practical energy guide','Three steps to lower energy bills.')
         payload=json.loads(call.call_args[0][0].data)
@@ -66,3 +66,23 @@ class PreviewTests(unittest.TestCase):
             handler.do_POST()
         self.assertEqual(handler.result[0],200)
         fetch.assert_not_called()
+
+    def test_scores_use_available_signals_instead_of_model_zero_or_buckets(self):
+        def score(title,snippet=''):
+            return preview_rating(prepare_preview('https://example.com/a',title,snippet))['score']
+        news=score('A council discusses the budget')
+        warning=score('Severe weather warning: 50mph gusts')
+        guide=score('How to save energy at home','A practical guide with steps and tips to reduce energy use and check your equipment.')
+        hype=score('You will not believe this shocking secret')
+        self.assertEqual(news,32)
+        self.assertEqual(warning,51)
+        self.assertGreater(guide,65)
+        self.assertLess(hype,news)
+        self.assertEqual(len({news,warning,guide,hype}),4)
+        self.assertNotIn(warning,(10,30,50,70,90))
+
+    def test_preview_score_does_not_claim_model_judgment_or_reward_domain_name(self):
+        a=preview_rating(prepare_preview('https://example.com/a','A council discusses the budget'))
+        b=preview_rating(prepare_preview('https://bbc.co.uk/a','A council discusses the budget'))
+        self.assertEqual(a['score'],b['score'])
+        self.assertIn('heuristic',a['disclaimer'])
